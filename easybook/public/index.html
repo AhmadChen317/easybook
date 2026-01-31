@@ -3,141 +3,173 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retailer Smart Dash</title>
+    <title>Retailer Pro - Easyload & Payments</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .network-tag { transition: all 0.3s ease; }
-        .Jazz { color: #ed1c24; border-color: #ed1c24; }
-        .Zong { color: #8dc63f; border-color: #8dc63f; }
-        .Ufone { color: #f37021; border-color: #f37021; }
-        .Telenor { color: #00a0e3; border-color: #00a0e3; }
+        .network-tag { transition: all 0.2s; }
+        .Jazz { background-color: #fee2e2; color: #dc2626; border-color: #fca5a5; }
+        .Zong { background-color: #f0fdf4; color: #16a34a; border-color: #86efac; }
+        .Ufone { background-color: #fff7ed; color: #ea580c; border-color: #fdba74; }
+        .Telenor { background-color: #f0f9ff; color: #0284c7; border-color: #7dd3fc; }
     </style>
 </head>
-<body class="bg-slate-100 min-h-screen">
+<body class="bg-slate-50 min-h-screen pb-20">
 
-    <div class="max-w-md mx-auto p-4">
-        <div class="grid grid-cols-2 gap-3 mb-6">
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-500">
-                <p class="text-xs text-slate-500 uppercase font-bold">Total Easyload</p>
-                <p id="stat-load" class="text-xl font-black text-slate-800">Rs. 0</p>
+    <div class="bg-slate-900 text-white p-6 rounded-b-[2rem] shadow-lg mb-6">
+        <div class="flex justify-between items-center mb-6">
+            <h1 class="text-xl font-bold">Store Manager Pro</h1>
+            <span class="bg-green-500 text-[10px] px-2 py-1 rounded-full uppercase font-black animate-pulse">Live</span>
+        </div>
+        
+        <div class="grid grid-cols-3 gap-2">
+            <div class="text-center">
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Total Sales</p>
+                <p id="stat-total" class="text-lg font-black italic">Rs. 0</p>
             </div>
-            <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-green-500">
-                <p class="text-xs text-slate-500 uppercase font-bold">EasyPaisa In/Out</p>
-                <p id="stat-paisa" class="text-xl font-black text-slate-800">Rs. 0</p>
+            <div class="text-center border-x border-slate-700">
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Commission</p>
+                <p id="stat-profit" class="text-lg font-black text-green-400">Rs. 0</p>
+            </div>
+            <div class="text-center">
+                <p class="text-[10px] text-slate-400 uppercase font-bold">Khata (Credit)</p>
+                <p id="stat-khata" class="text-lg font-black text-red-400">Rs. 0</p>
             </div>
         </div>
+    </div>
 
-        <div class="bg-white rounded-3xl shadow-xl p-6 mb-6">
-            <h2 class="text-lg font-bold text-slate-800 mb-4">New Transaction</h2>
-            
+    <div class="max-w-md mx-auto px-4 space-y-4">
+        
+        <div class="bg-white rounded-3xl shadow-md p-6 border border-slate-100">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="font-bold text-slate-800">Quick Entry</h2>
+                <span id="network-display" class="hidden text-[10px] font-black px-2 py-1 rounded-md border uppercase tracking-wider"></span>
+            </div>
+
             <div class="space-y-4">
-                <div>
-                    <div class="flex justify-between items-center mb-1">
-                        <label class="text-xs font-bold text-slate-400 uppercase">Mobile Number</label>
-                        <span id="network-display" class="text-xs font-black px-2 py-0.5 rounded border hidden"></span>
-                    </div>
+                <div class="relative">
                     <input type="number" id="phoneInput" oninput="detectNetwork()" placeholder="03XXXXXXXXX" 
-                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xl font-bold tracking-widest outline-none focus:border-blue-500">
+                           class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xl font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-500 transition-all">
                 </div>
 
-                <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase">Amount (Rs.)</label>
-                    <input type="number" id="amountInput" placeholder="0.00" 
-                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xl font-bold outline-none focus:border-blue-500">
+                <div class="flex gap-2">
+                    <input type="number" id="amountInput" placeholder="Amount" 
+                           class="flex-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xl font-bold outline-none focus:ring-2 focus:ring-blue-500">
+                    <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 flex items-center">
+                        <input type="checkbox" id="isKhata" class="w-5 h-5 accent-red-500">
+                        <label for="isKhata" class="ml-2 text-[10px] font-bold text-slate-500 uppercase">Khata</label>
+                    </div>
                 </div>
 
-                <div class="grid grid-cols-3 gap-2">
-                    <button onclick="setType('Easyload')" id="btn-Easyload" class="type-btn p-2 border-2 rounded-xl text-xs font-bold bg-blue-50 border-blue-500 text-blue-600">Easyload</button>
-                    <button onclick="setType('EP-Sent')" id="btn-EP-Sent" class="type-btn p-2 border-2 rounded-xl text-xs font-bold border-slate-100 text-slate-400">EP Sent</button>
-                    <button onclick="setType('EP-Recv')" id="btn-EP-Recv" class="type-btn p-2 border-2 rounded-xl text-xs font-bold border-slate-100 text-slate-400">EP Recv</button>
+                <div class="grid grid-cols-2 gap-2">
+                    <button onclick="setType('Easyload')" id="btn-Easyload" class="type-btn p-3 rounded-xl text-xs font-black border-2 bg-blue-600 border-blue-600 text-white shadow-md">EASYLOAD</button>
+                    <button onclick="setType('EasyPaisa')" id="btn-EasyPaisa" class="type-btn p-3 rounded-xl text-xs font-black border-2 border-slate-100 text-slate-500 bg-white">EASYPAISA</button>
                 </div>
 
-                <button onclick="saveTransaction()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-lg mt-4 shadow-lg active:scale-95 transition">
-                    Save Entry
+                <button onclick="saveTransaction()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-100 active:scale-95 transition-all">
+                    SAVE TRANSACTION
                 </button>
             </div>
         </div>
 
-        <div class="bg-white rounded-3xl shadow-sm p-6">
-            <h3 class="text-sm font-bold text-slate-400 uppercase mb-4 tracking-widest">Today's History</h3>
-            <div id="historyList" class="space-y-3">
-                <p class="text-center text-slate-300 py-4 italic">No entries yet...</p>
+        <div class="flex justify-between items-center px-2">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Recent Activity</h3>
+            <button onclick="clearHistory()" class="text-[10px] font-bold text-red-400 uppercase">Clear All</button>
+        </div>
+
+        <div id="historyList" class="space-y-3 pb-10">
+            <div class="text-center py-10">
+                <p class="text-slate-300 italic text-sm">Waiting for first entry...</p>
             </div>
         </div>
     </div>
 
     <script>
         let currentType = 'Easyload';
-        let totalLoad = 0;
-        let totalPaisa = 0;
+        let stats = { total: 0, profit: 0, khata: 0 };
 
         function detectNetwork() {
             const num = document.getElementById('phoneInput').value;
             const display = document.getElementById('network-display');
-            
             if (num.length >= 4) {
                 const prefix = num.substring(0, 4);
-                let network = "";
+                let net = "";
+                if (prefix >= "0300" && prefix <= "0309") net = "Jazz";
+                else if (prefix >= "0310" && prefix <= "0319") net = "Zong";
+                else if (prefix >= "0320" && prefix <= "0329") net = "Jazz/Warid";
+                else if (prefix >= "0330" && prefix <= "0339") net = "Ufone";
+                else if (prefix >= "0340" && prefix <= "0349") net = "Telenor";
 
-                if (prefix >= "0300" && prefix <= "0309") network = "Jazz";
-                else if (prefix >= "0310" && prefix <= "0319") network = "Zong";
-                else if (prefix >= "0320" && prefix <= "0329") network = "Jazz/Warid";
-                else if (prefix >= "0330" && prefix <= "0339") network = "Ufone";
-                else if (prefix >= "0340" && prefix <= "0349") network = "Telenor";
-
-                if (network) {
-                    display.innerText = network;
-                    display.className = `text-xs font-black px-2 py-0.5 rounded border block network-tag ${network.split('/')[0]}`;
-                } else {
-                    display.classList.add('hidden');
-                }
-            } else {
-                display.classList.add('hidden');
-            }
+                if (net) {
+                    display.innerText = net;
+                    display.className = `text-[10px] font-black px-2 py-1 rounded-md border uppercase tracking-wider block network-tag ${net.split('/')[0]}`;
+                } else { display.classList.add('hidden'); }
+            } else { display.classList.add('hidden'); }
         }
 
-        function setType(type) {
-            currentType = type;
-            document.querySelectorAll('.type-btn').forEach(btn => {
-                btn.classList.remove('bg-blue-50', 'border-blue-500', 'text-blue-600');
-                btn.classList.add('border-slate-100', 'text-slate-400');
+        function setType(t) {
+            currentType = t;
+            document.querySelectorAll('.type-btn').forEach(b => {
+                b.className = "type-btn p-3 rounded-xl text-xs font-black border-2 border-slate-100 text-slate-500 bg-white";
             });
-            document.getElementById(`btn-${type}`).classList.add('bg-blue-50', 'border-blue-500', 'text-blue-600');
+            const active = document.getElementById(`btn-${t}`);
+            active.className = `type-btn p-3 rounded-xl text-xs font-black border-2 shadow-md ${t === 'Easyload' ? 'bg-blue-600 border-blue-600 text-white' : 'bg-green-600 border-green-600 text-white'}`;
         }
 
         function saveTransaction() {
             const num = document.getElementById('phoneInput').value;
             const amt = parseInt(document.getElementById('amountInput').value);
-            const network = document.getElementById('network-display').innerText;
+            const khata = document.getElementById('isKhata').checked;
+            const net = document.getElementById('network-display').innerText || "Unknown";
 
-            if (!num || !amt) return alert("Please enter number and amount");
+            if (!num || !amt) return alert("Fill all fields!");
 
-            // Update Stats
-            if (currentType === 'Easyload') totalLoad += amt;
-            else totalPaisa += (currentType === 'EP-Sent' ? -amt : amt);
+            // Calculate Profit (Approx 2% for Easyload, Rs. 20 for EasyPaisa)
+            let comm = currentType === 'Easyload' ? (amt * 0.02) : 20;
+            
+            stats.total += amt;
+            stats.profit += comm;
+            if (khata) stats.khata += amt;
 
-            document.getElementById('stat-load').innerText = `Rs. ${totalLoad}`;
-            document.getElementById('stat-paisa').innerText = `Rs. ${totalPaisa}`;
-
-            // Add to History
-            const list = document.getElementById('historyList');
-            if (list.innerHTML.includes('No entries')) list.innerHTML = '';
+            updateStatsDisplay();
 
             const entry = document.createElement('div');
-            entry.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100";
+            entry.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100 animate-in slide-in-from-top duration-300";
             entry.innerHTML = `
-                <div>
-                    <p class="font-bold text-slate-800 text-sm">${num} <span class="text-[10px] opacity-50">(${network})</span></p>
-                    <p class="text-[10px] font-bold uppercase text-blue-500">${currentType}</p>
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${khata ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}">
+                        ${currentType[0]}
+                    </div>
+                    <div>
+                        <p class="text-sm font-bold text-slate-800">${num}</p>
+                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">${net} • ${currentType} ${khata ? '• <span class="text-red-500">KHATA</span>' : ''}</p>
+                    </div>
                 </div>
-                <p class="font-black text-slate-700">Rs. ${amt}</p>
+                <div class="text-right">
+                    <p class="font-black text-slate-800">Rs. ${amt}</p>
+                    <p class="text-[9px] text-green-500 font-bold">+ Rs. ${comm.toFixed(0)}</p>
+                </div>
             `;
+
+            const list = document.getElementById('historyList');
+            if (list.innerText.includes('Waiting')) list.innerHTML = '';
             list.prepend(entry);
 
-            // Reset
+            // Clear inputs
             document.getElementById('phoneInput').value = '';
             document.getElementById('amountInput').value = '';
-            document.getElementById('network-display').classList.add('hidden');
+            document.getElementById('isKhata').checked = false;
+        }
+
+        function updateStatsDisplay() {
+            document.getElementById('stat-total').innerText = `Rs. ${stats.total}`;
+            document.getElementById('stat-profit').innerText = `Rs. ${stats.profit.toFixed(0)}`;
+            document.getElementById('stat-khata').innerText = `Rs. ${stats.khata}`;
+        }
+
+        function clearHistory() {
+            if(confirm("Wipe today's records?")) {
+                location.reload();
+            }
         }
     </script>
 </body>
