@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Retailer Smart Dash</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .network-tag { transition: all 0.3s ease; }
+        .Jazz { color: #ed1c24; border-color: #ed1c24; }
+        .Zong { color: #8dc63f; border-color: #8dc63f; }
+        .Ufone { color: #f37021; border-color: #f37021; }
+        .Telenor { color: #00a0e3; border-color: #00a0e3; }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen">
+
+    <div class="max-w-md mx-auto p-4">
+        <div class="grid grid-cols-2 gap-3 mb-6">
+            <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-blue-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">Total Easyload</p>
+                <p id="stat-load" class="text-xl font-black text-slate-800">Rs. 0</p>
+            </div>
+            <div class="bg-white p-4 rounded-2xl shadow-sm border-b-4 border-green-500">
+                <p class="text-xs text-slate-500 uppercase font-bold">EasyPaisa In/Out</p>
+                <p id="stat-paisa" class="text-xl font-black text-slate-800">Rs. 0</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-xl p-6 mb-6">
+            <h2 class="text-lg font-bold text-slate-800 mb-4">New Transaction</h2>
+            
+            <div class="space-y-4">
+                <div>
+                    <div class="flex justify-between items-center mb-1">
+                        <label class="text-xs font-bold text-slate-400 uppercase">Mobile Number</label>
+                        <span id="network-display" class="text-xs font-black px-2 py-0.5 rounded border hidden"></span>
+                    </div>
+                    <input type="number" id="phoneInput" oninput="detectNetwork()" placeholder="03XXXXXXXXX" 
+                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xl font-bold tracking-widest outline-none focus:border-blue-500">
+                </div>
+
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase">Amount (Rs.)</label>
+                    <input type="number" id="amountInput" placeholder="0.00" 
+                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-xl font-bold outline-none focus:border-blue-500">
+                </div>
+
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setType('Easyload')" id="btn-Easyload" class="type-btn p-2 border-2 rounded-xl text-xs font-bold bg-blue-50 border-blue-500 text-blue-600">Easyload</button>
+                    <button onclick="setType('EP-Sent')" id="btn-EP-Sent" class="type-btn p-2 border-2 rounded-xl text-xs font-bold border-slate-100 text-slate-400">EP Sent</button>
+                    <button onclick="setType('EP-Recv')" id="btn-EP-Recv" class="type-btn p-2 border-2 rounded-xl text-xs font-bold border-slate-100 text-slate-400">EP Recv</button>
+                </div>
+
+                <button onclick="saveTransaction()" class="w-full bg-slate-800 text-white p-4 rounded-2xl font-bold text-lg mt-4 shadow-lg active:scale-95 transition">
+                    Save Entry
+                </button>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-3xl shadow-sm p-6">
+            <h3 class="text-sm font-bold text-slate-400 uppercase mb-4 tracking-widest">Today's History</h3>
+            <div id="historyList" class="space-y-3">
+                <p class="text-center text-slate-300 py-4 italic">No entries yet...</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentType = 'Easyload';
+        let totalLoad = 0;
+        let totalPaisa = 0;
+
+        function detectNetwork() {
+            const num = document.getElementById('phoneInput').value;
+            const display = document.getElementById('network-display');
+            
+            if (num.length >= 4) {
+                const prefix = num.substring(0, 4);
+                let network = "";
+
+                if (prefix >= "0300" && prefix <= "0309") network = "Jazz";
+                else if (prefix >= "0310" && prefix <= "0319") network = "Zong";
+                else if (prefix >= "0320" && prefix <= "0329") network = "Jazz/Warid";
+                else if (prefix >= "0330" && prefix <= "0339") network = "Ufone";
+                else if (prefix >= "0340" && prefix <= "0349") network = "Telenor";
+
+                if (network) {
+                    display.innerText = network;
+                    display.className = `text-xs font-black px-2 py-0.5 rounded border block network-tag ${network.split('/')[0]}`;
+                } else {
+                    display.classList.add('hidden');
+                }
+            } else {
+                display.classList.add('hidden');
+            }
+        }
+
+        function setType(type) {
+            currentType = type;
+            document.querySelectorAll('.type-btn').forEach(btn => {
+                btn.classList.remove('bg-blue-50', 'border-blue-500', 'text-blue-600');
+                btn.classList.add('border-slate-100', 'text-slate-400');
+            });
+            document.getElementById(`btn-${type}`).classList.add('bg-blue-50', 'border-blue-500', 'text-blue-600');
+        }
+
+        function saveTransaction() {
+            const num = document.getElementById('phoneInput').value;
+            const amt = parseInt(document.getElementById('amountInput').value);
+            const network = document.getElementById('network-display').innerText;
+
+            if (!num || !amt) return alert("Please enter number and amount");
+
+            // Update Stats
+            if (currentType === 'Easyload') totalLoad += amt;
+            else totalPaisa += (currentType === 'EP-Sent' ? -amt : amt);
+
+            document.getElementById('stat-load').innerText = `Rs. ${totalLoad}`;
+            document.getElementById('stat-paisa').innerText = `Rs. ${totalPaisa}`;
+
+            // Add to History
+            const list = document.getElementById('historyList');
+            if (list.innerHTML.includes('No entries')) list.innerHTML = '';
+
+            const entry = document.createElement('div');
+            entry.className = "flex justify-between items-center p-3 bg-slate-50 rounded-xl border border-slate-100";
+            entry.innerHTML = `
+                <div>
+                    <p class="font-bold text-slate-800 text-sm">${num} <span class="text-[10px] opacity-50">(${network})</span></p>
+                    <p class="text-[10px] font-bold uppercase text-blue-500">${currentType}</p>
+                </div>
+                <p class="font-black text-slate-700">Rs. ${amt}</p>
+            `;
+            list.prepend(entry);
+
+            // Reset
+            document.getElementById('phoneInput').value = '';
+            document.getElementById('amountInput').value = '';
+            document.getElementById('network-display').classList.add('hidden');
+        }
+    </script>
+</body>
+</html>
