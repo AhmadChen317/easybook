@@ -3,173 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Retailer Pro - Easyload & Payments</title>
+    <title>Easyload Rapid Station</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .network-tag { transition: all 0.2s; }
-        .Jazz { background-color: #fee2e2; color: #dc2626; border-color: #fca5a5; }
-        .Zong { background-color: #f0fdf4; color: #16a34a; border-color: #86efac; }
-        .Ufone { background-color: #fff7ed; color: #ea580c; border-color: #fdba74; }
-        .Telenor { background-color: #f0f9ff; color: #0284c7; border-color: #7dd3fc; }
+        .network-card { transition: all 0.2s ease; border: 2px solid transparent; }
+        .active-Jazz { border-color: #ef4444; background-color: #fef2f2; }
+        .active-Zong { border-color: #22c55e; background-color: #f0fdf4; }
+        .active-Ufone { border-color: #f97316; background-color: #fff7ed; }
+        .active-Telenor { border-color: #3b82f6; background-color: #eff6ff; }
     </style>
 </head>
-<body class="bg-slate-50 min-h-screen pb-20">
+<body class="bg-slate-100 font-sans select-none">
 
-    <div class="bg-slate-900 text-white p-6 rounded-b-[2rem] shadow-lg mb-6">
-        <div class="flex justify-between items-center mb-6">
-            <h1 class="text-xl font-bold">Store Manager Pro</h1>
-            <span class="bg-green-500 text-[10px] px-2 py-1 rounded-full uppercase font-black animate-pulse">Live</span>
+    <div class="bg-white p-4 shadow-sm border-b flex justify-between items-center sticky top-0 z-10">
+        <div>
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Today's Load</p>
+            <p id="totalDisplay" class="text-2xl font-black text-slate-800">Rs. 0</p>
         </div>
-        
-        <div class="grid grid-cols-3 gap-2">
-            <div class="text-center">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Total Sales</p>
-                <p id="stat-total" class="text-lg font-black italic">Rs. 0</p>
-            </div>
-            <div class="text-center border-x border-slate-700">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Commission</p>
-                <p id="stat-profit" class="text-lg font-black text-green-400">Rs. 0</p>
-            </div>
-            <div class="text-center">
-                <p class="text-[10px] text-slate-400 uppercase font-bold">Khata (Credit)</p>
-                <p id="stat-khata" class="text-lg font-black text-red-400">Rs. 0</p>
-            </div>
+        <div class="text-right">
+            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Net Profit</p>
+            <p id="profitDisplay" class="text-2xl font-black text-green-600">Rs. 0.00</p>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto px-4 space-y-4">
+    <div class="max-w-md mx-auto p-4 space-y-4">
         
-        <div class="bg-white rounded-3xl shadow-md p-6 border border-slate-100">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="font-bold text-slate-800">Quick Entry</h2>
-                <span id="network-display" class="hidden text-[10px] font-black px-2 py-1 rounded-md border uppercase tracking-wider"></span>
-            </div>
-
+        <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
             <div class="space-y-4">
                 <div class="relative">
-                    <input type="number" id="phoneInput" oninput="detectNetwork()" placeholder="03XXXXXXXXX" 
-                           class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xl font-bold tracking-widest outline-none focus:ring-2 focus:ring-blue-500 transition-all">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Customer Number</label>
+                    <input type="number" id="phoneInput" oninput="handleInput()" placeholder="03XXXXXXXXX" 
+                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-2xl font-black tracking-widest outline-none focus:border-slate-800 transition-all">
                 </div>
 
-                <div class="flex gap-2">
-                    <input type="number" id="amountInput" placeholder="Amount" 
-                           class="flex-1 p-4 bg-slate-50 border border-slate-200 rounded-2xl text-xl font-bold outline-none focus:ring-2 focus:ring-blue-500">
-                    <div class="bg-slate-50 border border-slate-200 rounded-2xl px-4 flex items-center">
-                        <input type="checkbox" id="isKhata" class="w-5 h-5 accent-red-500">
-                        <label for="isKhata" class="ml-2 text-[10px] font-bold text-slate-500 uppercase">Khata</label>
+                <div id="networkGrid" class="grid grid-cols-4 gap-2">
+                    <div id="net-Jazz" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
+                        <p class="text-[10px] font-bold">JAZZ</p>
+                    </div>
+                    <div id="net-Zong" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
+                        <p class="text-[10px] font-bold">ZONG</p>
+                    </div>
+                    <div id="net-Ufone" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
+                        <p class="text-[10px] font-bold">UFONE</p>
+                    </div>
+                    <div id="net-Telenor" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
+                        <p class="text-[10px] font-bold">TELENOR</p>
                     </div>
                 </div>
 
-                <div class="grid grid-cols-2 gap-2">
-                    <button onclick="setType('Easyload')" id="btn-Easyload" class="type-btn p-3 rounded-xl text-xs font-black border-2 bg-blue-600 border-blue-600 text-white shadow-md">EASYLOAD</button>
-                    <button onclick="setType('EasyPaisa')" id="btn-EasyPaisa" class="type-btn p-3 rounded-xl text-xs font-black border-2 border-slate-100 text-slate-500 bg-white">EASYPAISA</button>
+                <div>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Load Amount</label>
+                    <input type="number" id="amountInput" placeholder="Minimum 100" 
+                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-3xl font-black outline-none focus:border-slate-800 transition-all">
                 </div>
 
-                <button onclick="saveTransaction()" class="w-full bg-blue-600 text-white p-4 rounded-2xl font-black text-lg shadow-lg shadow-blue-100 active:scale-95 transition-all">
-                    SAVE TRANSACTION
+                <button onclick="processLoad()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-all">
+                    CONFIRM LOAD
                 </button>
             </div>
         </div>
 
-        <div class="flex justify-between items-center px-2">
-            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest">Recent Activity</h3>
-            <button onclick="clearHistory()" class="text-[10px] font-bold text-red-400 uppercase">Clear All</button>
+        <div class="px-2">
+            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Recent Transactions</h3>
         </div>
-
-        <div id="historyList" class="space-y-3 pb-10">
-            <div class="text-center py-10">
-                <p class="text-slate-300 italic text-sm">Waiting for first entry...</p>
+        
+        <div id="history" class="space-y-2 pb-10">
             </div>
-        </div>
     </div>
 
     <script>
-        let currentType = 'Easyload';
-        let stats = { total: 0, profit: 0, khata: 0 };
+        let dayTotal = 0;
+        let dayProfit = 0;
+        let detectedNetwork = "";
 
-        function detectNetwork() {
-            const num = document.getElementById('phoneInput').value;
-            const display = document.getElementById('network-display');
-            if (num.length >= 4) {
-                const prefix = num.substring(0, 4);
-                let net = "";
-                if (prefix >= "0300" && prefix <= "0309") net = "Jazz";
-                else if (prefix >= "0310" && prefix <= "0319") net = "Zong";
-                else if (prefix >= "0320" && prefix <= "0329") net = "Jazz/Warid";
-                else if (prefix >= "0330" && prefix <= "0339") net = "Ufone";
-                else if (prefix >= "0340" && prefix <= "0349") net = "Telenor";
-
-                if (net) {
-                    display.innerText = net;
-                    display.className = `text-[10px] font-black px-2 py-1 rounded-md border uppercase tracking-wider block network-tag ${net.split('/')[0]}`;
-                } else { display.classList.add('hidden'); }
-            } else { display.classList.add('hidden'); }
-        }
-
-        function setType(t) {
-            currentType = t;
-            document.querySelectorAll('.type-btn').forEach(b => {
-                b.className = "type-btn p-3 rounded-xl text-xs font-black border-2 border-slate-100 text-slate-500 bg-white";
-            });
-            const active = document.getElementById(`btn-${t}`);
-            active.className = `type-btn p-3 rounded-xl text-xs font-black border-2 shadow-md ${t === 'Easyload' ? 'bg-blue-600 border-blue-600 text-white' : 'bg-green-600 border-green-600 text-white'}`;
-        }
-
-        function saveTransaction() {
-            const num = document.getElementById('phoneInput').value;
-            const amt = parseInt(document.getElementById('amountInput').value);
-            const khata = document.getElementById('isKhata').checked;
-            const net = document.getElementById('network-display').innerText || "Unknown";
-
-            if (!num || !amt) return alert("Fill all fields!");
-
-            // Calculate Profit (Approx 2% for Easyload, Rs. 20 for EasyPaisa)
-            let comm = currentType === 'Easyload' ? (amt * 0.02) : 20;
+        function handleInput() {
+            const val = document.getElementById('phoneInput').value;
+            const gridItems = document.querySelectorAll('.network-card');
             
-            stats.total += amt;
-            stats.profit += comm;
-            if (khata) stats.khata += amt;
+            // Reset Grid
+            gridItems.forEach(item => item.classList.add('opacity-40'));
+            gridItems.forEach(item => item.className = item.className.replace(/active-\w+/g, ''));
+            detectedNetwork = "";
 
-            updateStatsDisplay();
+            if (val.length >= 4) {
+                const prefix = val.substring(0, 4);
+                let id = "";
 
-            const entry = document.createElement('div');
-            entry.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100 animate-in slide-in-from-top duration-300";
-            entry.innerHTML = `
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-full flex items-center justify-center font-bold text-xs ${khata ? 'bg-red-100 text-red-600' : 'bg-slate-100 text-slate-600'}">
-                        ${currentType[0]}
-                    </div>
-                    <div>
-                        <p class="text-sm font-bold text-slate-800">${num}</p>
-                        <p class="text-[10px] text-slate-400 font-bold uppercase tracking-tighter">${net} • ${currentType} ${khata ? '• <span class="text-red-500">KHATA</span>' : ''}</p>
-                    </div>
+                if (prefix >= "0300" && prefix <= "0309") { id = "net-Jazz"; detectedNetwork = "Jazz"; }
+                else if (prefix >= "0310" && prefix <= "0319") { id = "net-Zong"; detectedNetwork = "Zong"; }
+                else if (prefix >= "0320" && prefix <= "0329") { id = "net-Jazz"; detectedNetwork = "Jazz"; }
+                else if (prefix >= "0330" && prefix <= "0339") { id = "net-Ufone"; detectedNetwork = "Ufone"; }
+                else if (prefix >= "0340" && prefix <= "0349") { id = "net-Telenor"; detectedNetwork = "Telenor"; }
+
+                if (id) {
+                    const el = document.getElementById(id);
+                    el.classList.remove('opacity-40');
+                    el.classList.add(`active-${detectedNetwork.split('/')[0]}`);
+                }
+            }
+        }
+
+        function processLoad() {
+            const phone = document.getElementById('phoneInput').value;
+            const amount = parseInt(document.getElementById('amountInput').value);
+
+            if (phone.length < 11 || isNaN(amount) || amount < 50) {
+                alert("Please enter a valid 11-digit number and amount (min 50).");
+                return;
+            }
+
+            // Calculation (Using 2% as standard retailer commission)
+            const profit = amount * 0.02;
+            dayTotal += amount;
+            dayProfit += profit;
+
+            // Update UI
+            document.getElementById('totalDisplay').innerText = `Rs. ${dayTotal}`;
+            document.getElementById('profitDisplay').innerText = `Rs. ${dayProfit.toFixed(2)}`;
+
+            // Add to List
+            const history = document.getElementById('history');
+            const item = document.createElement('div');
+            item.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-200 animate-in fade-in slide-in-from-right duration-300";
+            item.innerHTML = `
+                <div>
+                    <p class="text-lg font-black text-slate-800">${phone}</p>
+                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${detectedNetwork || 'Other'}</p>
                 </div>
                 <div class="text-right">
-                    <p class="font-black text-slate-800">Rs. ${amt}</p>
-                    <p class="text-[9px] text-green-500 font-bold">+ Rs. ${comm.toFixed(0)}</p>
+                    <p class="text-lg font-black text-slate-800">Rs. ${amount}</p>
+                    <p class="text-[10px] font-bold text-green-500 italic">+Rs. ${profit.toFixed(2)}</p>
                 </div>
             `;
+            history.prepend(item);
 
-            const list = document.getElementById('historyList');
-            if (list.innerText.includes('Waiting')) list.innerHTML = '';
-            list.prepend(entry);
-
-            // Clear inputs
-            document.getElementById('phoneInput').value = '';
-            document.getElementById('amountInput').value = '';
-            document.getElementById('isKhata').checked = false;
-        }
-
-        function updateStatsDisplay() {
-            document.getElementById('stat-total').innerText = `Rs. ${stats.total}`;
-            document.getElementById('stat-profit').innerText = `Rs. ${stats.profit.toFixed(0)}`;
-            document.getElementById('stat-khata').innerText = `Rs. ${stats.khata}`;
-        }
-
-        function clearHistory() {
-            if(confirm("Wipe today's records?")) {
-                location.reload();
-            }
+            // Reset Form
+            document.getElementById('phoneInput').value = "";
+            document.getElementById('amountInput').value = "";
+            handleInput(); // Reset network highlights
         }
     </script>
 </body>
