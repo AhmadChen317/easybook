@@ -3,144 +3,198 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Easyload Rapid Station</title>
+    <title>Easyload Master - Daily Ledger</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        .network-card { transition: all 0.2s ease; border: 2px solid transparent; }
-        .active-Jazz { border-color: #ef4444; background-color: #fef2f2; }
-        .active-Zong { border-color: #22c55e; background-color: #f0fdf4; }
-        .active-Ufone { border-color: #f97316; background-color: #fff7ed; }
-        .active-Telenor { border-color: #3b82f6; background-color: #eff6ff; }
+        .network-card { transition: all 0.2s; border: 2px solid transparent; }
+        .active-Jazz { border-color: #ef4444; background-color: #fef2f2; color: #b91c1c; opacity: 1 !important; }
+        .active-Zong { border-color: #22c55e; background-color: #f0fdf4; color: #15803d; opacity: 1 !important; }
+        .active-Ufone { border-color: #f97316; background-color: #fff7ed; color: #c2410c; opacity: 1 !important; }
+        .active-Telenor { border-color: #3b82f6; background-color: #eff6ff; color: #1d4ed8; opacity: 1 !important; }
     </style>
 </head>
-<body class="bg-slate-100 font-sans select-none">
+<body class="bg-slate-50 font-sans pb-10">
 
-    <div class="bg-white p-4 shadow-sm border-b flex justify-between items-center sticky top-0 z-10">
-        <div>
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Today's Load</p>
-            <p id="totalDisplay" class="text-2xl font-black text-slate-800">Rs. 0</p>
+    <div class="bg-slate-900 text-white p-5 sticky top-0 z-20 shadow-2xl rounded-b-3xl">
+        <div class="flex justify-between items-start mb-4">
+            <div>
+                <h1 class="text-xl font-black tracking-tight">Easyload Ledger</h1>
+                <p id="currentDate" class="text-[10px] text-slate-400 font-bold uppercase"></p>
+            </div>
+            <button onclick="checkNewDay(true)" class="bg-white/10 hover:bg-white/20 p-2 rounded-lg text-[10px] font-bold uppercase transition">New Day</button>
         </div>
-        <div class="text-right">
-            <p class="text-[10px] font-black text-slate-400 uppercase tracking-widest">Net Profit</p>
-            <p id="profitDisplay" class="text-2xl font-black text-green-600">Rs. 0.00</p>
+        
+        <div class="grid grid-cols-2 gap-4">
+            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+                <p class="text-[9px] text-slate-400 font-black uppercase">Today's Sales</p>
+                <p id="totalDisplay" class="text-xl font-black italic">Rs. 0</p>
+            </div>
+            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+                <p class="text-[9px] text-slate-400 font-black uppercase">Net Profit</p>
+                <p id="profitDisplay" class="text-xl font-black text-green-400">Rs. 0</p>
+            </div>
         </div>
     </div>
 
-    <div class="max-w-md mx-auto p-4 space-y-4">
+    <div class="max-w-md mx-auto p-4 space-y-6">
         
-        <div class="bg-white rounded-3xl shadow-xl p-6 border border-slate-200">
+        <div class="bg-white rounded-[2.5rem] shadow-xl p-6 border border-slate-100">
             <div class="space-y-4">
-                <div class="relative">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Customer Number</label>
-                    <input type="number" id="phoneInput" oninput="handleInput()" placeholder="03XXXXXXXXX" 
-                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-2xl font-black tracking-widest outline-none focus:border-slate-800 transition-all">
-                </div>
-
                 <div id="networkGrid" class="grid grid-cols-4 gap-2">
-                    <div id="net-Jazz" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
-                        <p class="text-[10px] font-bold">JAZZ</p>
-                    </div>
-                    <div id="net-Zong" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
-                        <p class="text-[10px] font-bold">ZONG</p>
-                    </div>
-                    <div id="net-Ufone" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
-                        <p class="text-[10px] font-bold">UFONE</p>
-                    </div>
-                    <div id="net-Telenor" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-40">
-                        <p class="text-[10px] font-bold">TELENOR</p>
-                    </div>
+                    <div id="net-Jazz" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-30 text-[9px] font-black">JAZZ</div>
+                    <div id="net-Zong" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-30 text-[9px] font-black">ZONG</div>
+                    <div id="net-Ufone" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-30 text-[9px] font-black">UFONE</div>
+                    <div id="net-Telenor" class="network-card p-2 rounded-xl text-center border bg-slate-50 opacity-30 text-[9px] font-black">TELENOR</div>
                 </div>
 
-                <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-1 block">Load Amount</label>
-                    <input type="number" id="amountInput" placeholder="Minimum 100" 
-                           class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-3xl font-black outline-none focus:border-slate-800 transition-all">
-                </div>
+                <input type="number" id="phoneInput" oninput="handleInput()" placeholder="03XXXXXXXXX" 
+                       class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-2xl font-black tracking-widest outline-none focus:border-blue-500">
 
-                <button onclick="processLoad()" class="w-full bg-slate-900 text-white py-5 rounded-2xl font-black text-xl shadow-lg active:scale-95 transition-all">
-                    CONFIRM LOAD
+                <input type="number" id="amountInput" placeholder="Amount (Rs.)" 
+                       class="w-full p-4 bg-slate-50 border-2 border-slate-100 rounded-2xl text-2xl font-black outline-none focus:border-blue-500">
+
+                <button onclick="processLoad()" class="w-full bg-blue-600 text-white py-5 rounded-2xl font-black text-xl shadow-lg shadow-blue-200 active:scale-95 transition-all">
+                    SAVE RECORD
                 </button>
             </div>
         </div>
 
-        <div class="px-2">
-            <h3 class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em]">Recent Transactions</h3>
+        <div class="relative group">
+            <span class="absolute inset-y-0 left-4 flex items-center text-slate-400">🔍</span>
+            <input type="text" id="searchInput" onkeyup="filterHistory()" placeholder="Search Number or Network..." 
+                   class="w-full pl-12 pr-4 py-4 bg-white border border-slate-200 rounded-2xl text-sm font-bold shadow-sm outline-none focus:ring-2 focus:ring-blue-500">
         </div>
-        
-        <div id="history" class="space-y-2 pb-10">
+
+        <div id="history" class="space-y-3">
             </div>
+
+        <div class="bg-slate-900 rounded-3xl p-6 text-white shadow-xl">
+            <h3 class="text-xs font-black text-slate-400 uppercase tracking-widest mb-4">Performance Overview</h3>
+            <div class="space-y-4">
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-sm text-slate-300">Total Transactions</span>
+                    <span id="perf-count" class="font-black text-lg">0</span>
+                </div>
+                <div class="flex justify-between items-center border-b border-white/5 pb-2">
+                    <span class="text-sm text-slate-300">Avg. Load Size</span>
+                    <span id="perf-avg" class="font-black text-lg">Rs. 0</span>
+                </div>
+                <div class="flex justify-between items-center">
+                    <span class="text-sm text-slate-300">Busiest Network</span>
+                    <span id="perf-net" class="font-black text-lg text-blue-400">---</span>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script>
-        let dayTotal = 0;
-        let dayProfit = 0;
+        let dayRecords = JSON.parse(localStorage.getItem('easyload_records')) || [];
         let detectedNetwork = "";
+
+        // Initialization
+        window.onload = () => {
+            checkNewDay();
+            renderHistory();
+            updateDashboard();
+        };
+
+        function checkNewDay(manual = false) {
+            const today = new Date().toLocaleDateString();
+            const lastDate = localStorage.getItem('last_date');
+            document.getElementById('currentDate').innerText = today;
+
+            if (manual || (lastDate && lastDate !== today)) {
+                if (manual && !confirm("Start a new day? History will be saved but dashboard will reset.")) return;
+                dayRecords = [];
+                localStorage.setItem('easyload_records', JSON.stringify([]));
+                localStorage.setItem('last_date', today);
+                renderHistory();
+                updateDashboard();
+            }
+        }
 
         function handleInput() {
             const val = document.getElementById('phoneInput').value;
             const gridItems = document.querySelectorAll('.network-card');
-            
-            // Reset Grid
-            gridItems.forEach(item => item.classList.add('opacity-40'));
-            gridItems.forEach(item => item.className = item.className.replace(/active-\w+/g, ''));
+            gridItems.forEach(i => { i.classList.add('opacity-30'); i.className = i.className.replace(/active-\w+/g, ''); });
             detectedNetwork = "";
 
             if (val.length >= 4) {
                 const prefix = val.substring(0, 4);
                 let id = "";
-
                 if (prefix >= "0300" && prefix <= "0309") { id = "net-Jazz"; detectedNetwork = "Jazz"; }
                 else if (prefix >= "0310" && prefix <= "0319") { id = "net-Zong"; detectedNetwork = "Zong"; }
                 else if (prefix >= "0320" && prefix <= "0329") { id = "net-Jazz"; detectedNetwork = "Jazz"; }
                 else if (prefix >= "0330" && prefix <= "0339") { id = "net-Ufone"; detectedNetwork = "Ufone"; }
                 else if (prefix >= "0340" && prefix <= "0349") { id = "net-Telenor"; detectedNetwork = "Telenor"; }
 
-                if (id) {
-                    const el = document.getElementById(id);
-                    el.classList.remove('opacity-40');
-                    el.classList.add(`active-${detectedNetwork.split('/')[0]}`);
-                }
+                if (id) document.getElementById(id).classList.add(`active-${detectedNetwork}`);
             }
         }
 
         function processLoad() {
             const phone = document.getElementById('phoneInput').value;
             const amount = parseInt(document.getElementById('amountInput').value);
+            if (phone.length < 11 || isNaN(amount)) return alert("Invalid Number/Amount");
 
-            if (phone.length < 11 || isNaN(amount) || amount < 50) {
-                alert("Please enter a valid 11-digit number and amount (min 50).");
-                return;
-            }
-
-            // Calculation (Using 2% as standard retailer commission)
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const profit = amount * 0.02;
-            dayTotal += amount;
-            dayProfit += profit;
 
-            // Update UI
-            document.getElementById('totalDisplay').innerText = `Rs. ${dayTotal}`;
-            document.getElementById('profitDisplay').innerText = `Rs. ${dayProfit.toFixed(2)}`;
+            const record = { phone, amount, network: detectedNetwork || "Other", profit, time };
+            dayRecords.unshift(record);
+            localStorage.setItem('easyload_records', JSON.stringify(dayRecords));
 
-            // Add to List
-            const history = document.getElementById('history');
-            const item = document.createElement('div');
-            item.className = "bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-200 animate-in fade-in slide-in-from-right duration-300";
-            item.innerHTML = `
-                <div>
-                    <p class="text-lg font-black text-slate-800">${phone}</p>
-                    <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest">${detectedNetwork || 'Other'}</p>
-                </div>
-                <div class="text-right">
-                    <p class="text-lg font-black text-slate-800">Rs. ${amount}</p>
-                    <p class="text-[10px] font-bold text-green-500 italic">+Rs. ${profit.toFixed(2)}</p>
-                </div>
-            `;
-            history.prepend(item);
-
-            // Reset Form
             document.getElementById('phoneInput').value = "";
             document.getElementById('amountInput').value = "";
-            handleInput(); // Reset network highlights
+            renderHistory();
+            updateDashboard();
+            handleInput();
+        }
+
+        function updateDashboard() {
+            let total = 0, profit = 0;
+            let netCount = {};
+            dayRecords.forEach(r => {
+                total += r.amount;
+                profit += r.profit;
+                netCount[r.network] = (netCount[r.network] || 0) + 1;
+            });
+
+            document.getElementById('totalDisplay').innerText = `Rs. ${total}`;
+            document.getElementById('profitDisplay').innerText = `Rs. ${profit.toFixed(0)}`;
+            
+            // Performance Stats
+            document.getElementById('perf-count').innerText = dayRecords.length;
+            document.getElementById('perf-avg').innerText = dayRecords.length ? `Rs. ${(total/dayRecords.length).toFixed(0)}` : "Rs. 0";
+            
+            let topNet = Object.keys(netCount).reduce((a, b) => netCount[a] > netCount[b] ? a : b, "---");
+            document.getElementById('perf-net').innerText = topNet;
+        }
+
+        function renderHistory(data = dayRecords) {
+            const history = document.getElementById('history');
+            if (data.length === 0) {
+                history.innerHTML = `<p class="text-center text-slate-300 py-10 italic">No records found.</p>`;
+                return;
+            }
+            history.innerHTML = data.map(r => `
+                <div class="bg-white p-4 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                    <div>
+                        <p class="text-sm font-black text-slate-800">${r.phone}</p>
+                        <p class="text-[9px] font-bold text-slate-400 uppercase">${r.time} • ${r.network}</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="font-black text-slate-800 italic">Rs. ${r.amount}</p>
+                        <p class="text-[9px] font-bold text-green-500">+Rs. ${r.profit.toFixed(0)}</p>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function filterHistory() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const filtered = dayRecords.filter(r => r.phone.includes(query) || r.network.toLowerCase().includes(query));
+            renderHistory(filtered);
         }
     </script>
 </body>
